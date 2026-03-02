@@ -42,31 +42,36 @@ class _randomquotepageState extends State<randomquotepage> {
   }
 
   Future<void> fetchquote() async {
-    final Uri url = Uri.parse(
-      "https://quoteslate.vercel.app/api/quotes/random",
-    );
-    try {
-      final http.Response response = await http.get(url);
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
+  final Uri url =
+      Uri.parse("https://quoteslate.vercel.app/api/quotes/random");
 
-        setState(() {
-          quote = data['quote'];
-          author = data['author'];
-        });
-      } else {
-        setState(() {
-          quote = 'failed to load quote ';
-          author = 'invalid';
-        });
-      }
-    } catch (e) {
+  try {
+    final http.Response response = await http.get(url);
+
+    print("STATUS CODE: ${response.statusCode}");
+    print("BODY: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
       setState(() {
-        quote = "error when fetcing data";
-        author = " ";
+        quote = data['quote'];
+        author = data['author'];
+      });
+    } else {
+      setState(() {
+        quote = 'failed to load quote';
+        author = 'invalid';
       });
     }
+  } catch (e) {
+    print("ERROR: $e");
+    setState(() {
+      quote = "error when fetching data";
+      author = "";
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -81,13 +86,17 @@ class _randomquotepageState extends State<randomquotepage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("$quote",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20,fontStyle: FontStyle.italic),),
+            Text(
+              "$quote",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+            ),
             SizedBox(height: 20),
-            Text("$author",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),),
+            Text(
+              "$author",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+            ),
             SizedBox(height: 20),
             ElevatedButton(onPressed: fetchquote, child: Text("click me ")),
           ],
